@@ -1,0 +1,17 @@
+# Caminho base do projeto
+path: C:/Users/crisa/Documents/SAFEWORK_TCC/dataset
+
+# Pastas relativas ao path acima
+train: train/images
+val: val/images
+
+# Classes (A ordem deve ser a mesma que aparece no Label Studio)
+names:
+  0: sem_capacete
+  1: com_capacete
+  2: com_colete
+  3: sem_colete
+  4: com_abafador
+  5: sem_abafador
+  6: com_oculos_de_seguranca
+  7: sem_oculos_de_seguranca
