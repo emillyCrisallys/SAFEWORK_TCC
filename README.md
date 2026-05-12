@@ -48,36 +48,7 @@ A regra de negócio principal é o Pipeline de Conformidade:
 ## Protótipo Estrutural do Projeto
 O repositório será organizado em micro-módulos para facilitar o desenvolvimento paralelo:
 
-SAFEWORK_TCC/
-├── backend/                    # Core do Sistema (Python/FastAPI)
-│   ├── app/
-│   │   ├── api/                # Rotas (v1/endpoints.py) e WebSockets
-│   │   ├── core/               # Configurações globais (Security, Config, Env)
-│   │   ├── domain/             # Regras de Negócio Puras (Entidades e Modelos)
-│   │   ├── services/           # Lógica de Orquestração (Inference & Safety Engine)
-│   │   └── infrastructure/     # Conexão com DB (PostgreSQL) e Firebase Client
-│   ├── ai_engine/              # Motor de Visão Computacional
-│   │   ├── models/             # Pesos do YOLOv11 (.pt) e Face Recognition
-│   │   ├── processors/         # Scripts de processamento de frames/OpenCV
-│   │   └── utils/              # Helpers para desenho de bounding boxes
-│   ├── tests/                  # Testes unitários e de integração
-│   ├── main.py                 # Ponto de entrada do FastAPI
-│   └── requirements.txt        # Dependências (ultralytics, fastapi, etc.)
-├── frontend/                   # Interface do Usuário (React.js)
-│   ├── public/                 # Arquivos estáticos
-│   ├── src/
-│   │   ├── assets/             # Imagens, Ícones e Estilos (Tailwind)
-│   │   ├── components/         # Componentes Reutilizáveis (Cards, Sidebar, VideoPlayer)
-│   │   ├── pages/              # Telas (Dashboard, Relatórios, Configurações)
-│   │   ├── services/           # Integração com API (Axios) e WebSockets
-│   │   └── context/            # Gerenciamento de estado global
-│   ├── package.json
-│   └── tailwind.config.js
-├── docs/                       # Documentação Técnica
-│   ├── diagrams/               # Diagramas (Sequência, C4, Casos de Uso)
-│   └── architecture/           # Explicações detalhadas da arquitetura
-├── .gitignore                  # Arquivos ignorados (venv, .env, __pycache__)
-└── README.md                   # Documentação Principal do Projeto
+![alt text](image.png)
 
 1. Camada de Inteligência Artificial (AI Engine)
 YOLOv11: Escolhido por ser a versão mais atualizada da arquitetura YOLO, oferecendo o melhor equilíbrio entre precisão (mAP) e velocidade de inferência em dispositivos de borda (Edge).
