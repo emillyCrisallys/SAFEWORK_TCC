@@ -1,18 +1,17 @@
 from ultralytics import YOLO
 
-def treinar_modelo():
-    # 1. Carregar o modelo base do YOLOv11
+def main():
+    # Carrega os pesos limpos do YOLOv11 nano
     model = YOLO("yolo11n.pt")
 
-    # 2. Iniciar o treinamento
+    # Dispara o treinamento alterado para rodar no processador (CPU)
     model.train(
-        data="dataset/safework_data.yaml", 
-        epochs=50,       # Comece com 50 para testar a velocidade
-        imgsz=640,       # Tamanho padrão do YOLO
-        batch=16,        # Quantidade de imagens processadas por vez
-        project="models", # Onde salvar o resultado
-        name="safework_v1"
+        data="safework_data.yaml", 
+        epochs=100,        # Quantidade ideal de épocas
+        imgsz=640,         # Resolução padrão
+        device="cpu",      # Mudamos aqui! Agora o Python aceitará o comando sem reclamar de placa de vídeo
+        workers=2          # Ajustado para ficar leve e estável na CPU
     )
 
 if __name__ == "__main__":
-    treinar_modelo()
+    main()
