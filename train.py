@@ -2,15 +2,17 @@ from ultralytics import YOLO
 
 def main():
     # Carrega os pesos limpos do YOLOv11 nano
-    model = YOLO("yolo11n.pt")
+    model = YOLO(r"runs\detect\train-4\weights\best.pt")
 
     # Dispara o treinamento alterado para rodar no processador (CPU)
     model.train(
-        data="safework_data.yaml", 
-        epochs=100,        # Quantidade ideal de épocas
-        imgsz=640,         # Resolução padrão
-        device="cpu",      # Mudamos aqui! Agora o Python aceitará o comando sem reclamar de placa de vídeo
-        workers=2          # Ajustado para ficar leve e estável na CPU
+        data="safework_data.yaml",
+        epochs=30,         
+        imgsz=640,
+        device="cpu",
+        workers=2,
+        batch=8,            
+        name="safework_treino_atualizado"
     )
 
 if __name__ == "__main__":
