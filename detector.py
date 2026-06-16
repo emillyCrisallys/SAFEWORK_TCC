@@ -7,9 +7,7 @@ import unicodedata
 from ultralytics import YOLO
 from src.recognition import ReconhecedorFacial
 
-# --- Configurações ---
 MODEL_PATH = r"C:\users\gusta\onedrive\documentos\safework_tcc-main\safework_tcc-main\runs\detect\train-4\weights\best.pt"
-
 API_URL = "http://127.0.0.1:8000/detector/registrar-infracao"
 INTERVALO_MINIMO = 10 
 ultima_infracao = 0
