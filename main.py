@@ -1,67 +1,32 @@
+from fastapi import FastAPI, UploadFile, File
 import cv2
+import numpy as np
 from ultralytics import YOLO
-from src.database import salvar_deteccao
-import time
+import io
 
-# 1. Carrega o modelo padrão (YOLOv11 nano é leve para testes)
-# Na primeira vez, ele vai baixar o arquivo yolov11n.pt automaticamente
-model = YOLO('yolov11n.pt') 
+app = FastAPI()
 
-def iniciar_monitoramento():
-    # 0 é a webcam padrão. Para o TCC, depois usaremos a url_rtsp do banco
-    cap = cv2.VideoCapture(0) 
+# Carregue o modelo UMA VEZ ao iniciar o servidor (não a cada requisição!)
+model = YOLO('yolov11n.pt')
 
-    print("Monitoramento SafeWork iniciado...")
+@app.post("/predict")
+async def predict(file: UploadFile = File(...)):
+    # 1. Lê os bytes da imagem que o Backend enviou
+    contents = await file.read()
+    nparr = np.frombuffer(contents, np.uint8)
+    frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
-    while cap.isOpened():
-        success, frame = cap.read()
-        if not success:
-            break
+    # 2. Executa a detecção (a mesma lógica que você tinha)
+    results = model(frame, verbose=False)
+    
+    detections = []
+    for result in results:
+        for box in result.boxes:
+            detections.append({
+                "class": int(box.cls[0]),
+                "confidence": float(box.conf[0]),
+                "bbox": box.xyxy[0].tolist()
+            })
 
-        start_time = time.time()
-
-        # 2. Executa a detecção no frame
-        results = model(frame, verbose=False)
-        
-        processing_time = int((time.time() - start_time) * 1000)
-
-        for result in results:
-            for box in result.boxes:
-                # Classe 0 no YOLO padrão é 'person'
-                # Vamos fingir que detectar uma pessoa sem filtro é uma "falta de EPI" para testar
-                cls = int(box.cls[0])
-                conf = float(box.conf[0])
-
-                if cls == 0 and conf > 0.5:
-                    print(f"Detectado! Confiança: {conf:.2f}")
-
-                    # 3. Monta o objeto para o banco conforme sua tabela 'deteccoes'
-                    # Referência: SafeWork.sql
-                    deteccao_data = {
-                        'id_camera': 1,  # ID fictício para teste
-                        'id_funcionario': None, # Ficará para a parte de Face ID
-                        'tipo_falta_epi': 'Teste de Sistema',
-                        'path_original': 'storage/test_orig.jpg',
-                        'path_blur': 'storage/test_blur.jpg',
-                        'confianca': conf,
-                        'tempo_ms': processing_time
-                    }
-
-                    # 4. Salva no Postgres
-                    salvar_deteccao(deteccao_data)
-                    
-                    # Desenha na tela para você ver acontecer
-                    cv2.rectangle(frame, (int(box.xyxy[0][0]), int(box.xyxy[0][1])), 
-                                 (int(box.xyxy[0][2]), int(box.xyxy[0][3])), (0, 255, 0), 2)
-
-        cv2.imshow("SafeWork - Monitoramento IA", frame)
-
-        # Aperte 'q' para fechar
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-
-    cap.release()
-    cv2.destroyAllWindows()
-
-if __name__ == "__main__":
-    iniciar_monitoramento()
+    # 3. Retorna o JSON para o seu Backend
+    return {"status": "sucesso", "detections": detections}
